@@ -3,6 +3,7 @@ from scipy.io import loadmat
 import cv2
 import json
 import sys
+from pprint import pprint
 
 def convert_annotations(vbb):
     """Get the bounding boxes for MATLAB's vbb file format
@@ -78,3 +79,21 @@ def convert_sequence(vid, target_dir):
         print('Number of images extracted:  {} '.format(i), end='\r')
         sys.stdout.flush()
         i += 1
+
+def test_conversion(test_path):
+    annotations = None
+    with open(test_path + '/annotations.json', 'r') as f:
+        annotations = json.load(f)
+
+
+    lis = annotations['0279.png']
+    print(lis['coords_list'])
+    print(type(lis['coords_list']))
+    print(lis['coords_list'], len(lis['coords_list']))
+    print(annotations['0279.png']['coords_list'][0]['x1'])
+#    for img_path in glob.glob(test_path + '/*.png'):
+#        img = cv2.imread(img_path)
+
+if __name__ == '__main__':
+    test_path = './target/set00/V000'
+    test_conversion(test_path)
