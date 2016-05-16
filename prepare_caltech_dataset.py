@@ -1,6 +1,8 @@
+from __future__ import print_function
 from scipy.io import loadmat
 import cv2
 import json
+import sys
 
 def convert_annotations(vbb):
     """Get the bounding boxes for MATLAB's vbb file format
@@ -44,19 +46,20 @@ def convert_annotations(vbb):
             im_info['num_objects'] = 0
             im_info['coords_list'] = []
 
-	print i
         annotations['{:04d}.png'.format(i)] = im_info
+        print('Processing annotations {}/{}'.format(i, num_frames), end='\r')
+        sys.stdout.flush()
 
     return annotations
 
 
 
 #get the annotation
-vbb = loadmat('./V000.vbb')
+#vbb = loadmat('./V000.vbb')
 
-d = convert_annotations(vbb)
-with open('annotations.json', 'w') as outfile:
-    json.dump(d, outfile)
+#d = convert_annotations(vbb)
+#with open('annotations.json', 'w') as outfile:
+#    json.dump(d, outfile)
 
 def convert_sequence(vid, target_dir):
     """Convert the video sequence to images, and saves it in target directory
@@ -68,6 +71,10 @@ def convert_sequence(vid, target_dir):
     while True:
         ret, frame = vid.read()
         if not ret:
+            print('\n')
+            sys.stdout.flush()
             break
         cv2.imwrite('{}/{:04d}.png'.format(target_dir, i), frame)
+        print('Number of images extracted:  {} '.format(i), end='\r')
+        sys.stdout.flush()
         i += 1
