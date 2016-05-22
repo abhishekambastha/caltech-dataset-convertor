@@ -1,6 +1,6 @@
 import os
 from scipy.io import loadmat
-from prepare_caltech_dataset import convert_sequence, convert_annotations
+from prepare_caltech_dataset import convert_sequence, convert_annotations, read_sequence
 import cv2
 import glob
 import json
@@ -13,13 +13,14 @@ def process_seqs():
         if not os.path.exists('target/{}'.format(parent_dir)):
             os.mkdir('target/{}'.format(parent_dir))
         for seq_path in glob.glob('{}/*.seq'.format(dir_name)):
-            vid = cv2.VideoCapture(seq_path)
+            #vid = cv2.VideoCapture(seq_path)
             current_dir = os.path.splitext(os.path.basename(seq_path))[0]
             if not os.path.exists('target/{}/{}'.format(parent_dir, current_dir)):
                 os.mkdir('target/{}/{}'.format(parent_dir, current_dir))
             #save it here!
             print('Converting {}/{}.seq'.format(parent_dir, current_dir))
-            convert_sequence(vid, 'target/{}/{}'.format(parent_dir, current_dir))
+            #convert_sequence(vid, 'target/{}/{}'.format(parent_dir, current_dir))
+            read_sequence(seq_path, 'target/{}/{}'.format(parent_dir, current_dir))
 
 
 def process_annotations():
@@ -44,7 +45,7 @@ def main():
     if not os.path.exists('target'):
         os.mkdir('target')
 
-    #process_seqs()
+    process_seqs()
 
     process_annotations()
 
