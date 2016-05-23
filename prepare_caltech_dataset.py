@@ -6,7 +6,7 @@ import sys
 from pprint import pprint
 import struct
 
-def convert_annotations(vbb):
+def convert_annotations(vbb, prefix):
     """Get the bounding boxes for MATLAB's vbb file format
 
     Argument:
@@ -48,7 +48,7 @@ def convert_annotations(vbb):
             im_info['num_objects'] = 0
             im_info['coords_list'] = []
 
-        annotations['{:04d}.png'.format(i)] = im_info
+        annotations['{}_{:04d}.jpg'.format(prefix, i)] = im_info
         print('Processing annotations {}/{}'.format(i, num_frames), end='\r')
         sys.stdout.flush()
 
@@ -56,7 +56,7 @@ def convert_annotations(vbb):
 
 
 def read_header(ifile):
-        
+
     feed = ifile.read(4)
     norpix = ifile.read(24)
     version = struct.unpack('@i', ifile.read(4))
@@ -76,8 +76,8 @@ def read_header(ifile):
                 'true_size':params[8],
                 'num_frames':params[6]}
 
-def read_sequence(path, target_dir):
-    
+def read_sequence(path, target_dir, prefix):
+
     ifile = open(path, 'rb')
     params = read_header(ifile)
     bytes = open(path, 'rb').read()
@@ -87,9 +87,9 @@ def read_sequence(path, target_dir):
     s = 1024
     seek = [0]*(params['num_frames']+1)
     seek[0] = 1024
-    
+
     images = []
-    
+
     for i in range(0, params['num_frames']):
         try:
             tmp = struct.unpack_from('@I', bytes[s:s+4])[0]
@@ -106,10 +106,10 @@ def read_sequence(path, target_dir):
             nbytes = struct.unpack_from('@i', bytes[s:s+4])[0]
             I = bytes[s+4:s+nbytes]
 
-            open('{}/{:04d}.jpg'.format(target_dir, i), 'wb+').write(I)
+            open('{}/{}_{:04d}.jpg'.format(target_dir, prefix, i), 'wb+').write(I)
         except:
             continue
-        
+
     return images
 
 def convert_sequence(vid, target_dir):
